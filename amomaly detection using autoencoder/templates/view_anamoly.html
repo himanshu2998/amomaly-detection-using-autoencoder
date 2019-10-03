@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+
+<title>Plot</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+}
+th, td {
+  border-bottom: 1px solid #ddd;
+}
+tr:nth-child(even) {background-color: #f2f2f2;}
+th {
+  background-color: #4CAF50;
+  color: white;
+}
+</style>
+</head>
+<body>
+<center>
+<div>
+
+    <form action="{{url_for('view_anamoly')}}" method="post">
+        <table>
+            <tr>
+        <td>Anamolous Index:</td>
+                <td>
+                    <select name="value">
+           {% for i in range(result['ana_index']|length) %}
+                <option value = "{{i}}">{{result['ana_index'][i]}}</option>
+            {% endfor %}
+        </select>
+                </td>
+            </tr>
+
+            <tr><td></td><td><input type="submit" value="Ok"></td></tr>
+        </table>
+    </form>
+        </div>
+            <div>
+                <br>
+        {% if result['have_table']==True %}
+        <table>
+            <tr>
+                <th>Sensor Name</th>
+                <th>Percentage Contribution</th>
+            </tr>
+            {% for i in range(result['ana_sensors']|length) %}
+            <tr>
+        <td>{{result['ana_sensors'][i]}}</td>
+                <td>{{result['ana_per'][i]}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+            </div>
+    </center>
+</body>
+</html>

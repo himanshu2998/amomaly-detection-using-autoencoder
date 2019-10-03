@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+
+<title>Plot</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</head>
+<body>
+{% if result['have_img']==True %}
+<div id="hist">
+</div>
+
+<div id="line">
+</div>
+{% endif %}
+</body>
+{% if (result['have_img']==True) %}
+<script>
+//debugger;
+var x1 = {{result['predicted_loss']}};
+var x2 = {{result['test_loss']}};
+var trace1 = {
+  x: x1,
+  type: "histogram",
+  name: "Test Loss",
+  opacity: 0.5,
+  marker: {
+     color: 'green',
+  },
+  xbins: {
+    end: 4,
+    size: 0.06,
+    start: -3.2
+
+  },
+};
+var trace2 = {
+  x: x2,
+  type: "histogram",
+  name: "Train Loss",
+  opacity: 0.2,
+  marker: {
+     color: 'red',
+  },
+  xbins: {
+    end: 4,
+    size: 0.06,
+    start: -3.2
+
+  },
+};
+
+var data = [trace1, trace2];
+var layout = {
+    barmode: "overlay",
+    title: 'Loss Density Plot',
+};
+
+Plotly.newPlot("hist", data, layout);
+
+
+var trace1 = {
+  type: "scatter",
+  mode: "lines+markers",
+  name: "Train Loss",
+  x: [{% for i in result['test_index'] %}'{{i}}',{% endfor %}],
+  y: {{result['test_loss']}},
+  line: {color: '#17BECF'}
+}
+
+var trace2 = {
+  type: "scatter",
+  mode: "lines+markers",
+  name: "Test Loss",
+  x: [{% for i in result['pred_index'] %}'{{i}}',{% endfor %}],
+  y: {{result['predicted_loss']}},
+  line: {color: '#7F7F7F'}
+}
+
+var data = [trace1,trace2];
+
+var layout = {
+  title: 'Overall Loss plot',
+};
+
+Plotly.newPlot('line', data, layout);
+
+</script>
+
+{% endif %}
+
+</html>

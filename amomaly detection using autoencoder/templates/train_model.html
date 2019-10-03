@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+
+<title>Plot</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+}
+
+</style>
+</head>
+<body>
+<div>
+    <center>
+    <h5>Select parameters for model training</h5>
+    <form action="{{url_for('train_model')}}" method="post">
+        <table>
+            <tr>
+        <th>Batch-size:</th>  <td><input type="text" name="batch_size" value=20></td>
+            </tr>
+            <tr>
+            <th>Neurons in middle layer:</th>  <td><input type="text" name="n_z" value=6></td>
+            </tr><tr>
+        <th>Epochs:</th>  <td><input type="text" name="epochs" value=100></td>
+            </tr>
+            <tr>
+        <th>Training data selection:</th>  <td><select name="split">
+        {% for i in range(1,100) %}
+        <option value="{{i}}">{{i}}%</option>
+        {% endfor %}
+        </select></td>
+            </tr>
+            <tr><td></td><td><input type="submit" value="Start Training"></td></tr>
+        </table>
+    </form>
+    </center>
+</div>
+{% if result['have_img']==True %}
+<div><center>
+<canvas id="chart" width="600px" height="600px"></canvas>
+</center>
+</div>
+{% endif %}
+</body>
+{% if (result['have_img']==True) %}
+<script>
+
+    var data={{result['data']}}
+    var index=[{% for i in range(result['data']|length) %}{{i+1}},{% endfor %}]
+
+    function myfun(){
+        Chart.defaults.global.responsive = false;
+        //debugger;
+            var chartData = {
+            labels : index,
+              datasets : [
+              {
+                  label: 'Training_Loss',
+                  fill: true,
+                  lineTension: 0.01,
+                  backgroundColor: "rgba(75,192,192,0.4)",
+                  borderColor: "rgba(75,192,192,1)",
+                  borderCapStyle: 'butt',
+                  borderDash: [],
+                  borderDashOffset: 0.0,
+                  borderJoinStyle: 'miter',
+                  pointBorderColor: "rgba(75,192,192,1)",
+                  pointBackgroundColor: "#fff",
+                  pointBorderWidth: 1,
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                  pointHoverBorderColor: "rgba(220,220,220,1)",
+                  pointHoverBorderWidth: 2,
+                  pointRadius: 2,
+                  pointHitRadius: 10,
+                  data: data,
+                  spanGaps: false
+                  },
+                  ]
+            }
+
+
+            var ctx = document.getElementById("chart").getContext("2d");
+
+            var myChart = new Chart(ctx, {
+              type: 'line',
+              data: chartData,
+              options: {
+                tooltips: {
+                  enabled: true,
+                  mode: 'single',
+                  callbacks: {
+                    label: function(tooltipItems, data) {
+                             return tooltipItems.yLabel + ' loss';
+                           }
+                  }
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                        display: true,
+                        labelString: 'Loss'
+                                    }
+                             }
+                            ],
+                    xAxes: [{
+                        scaleLabel: {
+                        display: true,
+                        labelString: 'Epochs'
+                                    }
+                             }
+                            ]
+                            }
+                         }
+            });
+
+            var holder = document.getElementById("chart");
+
+            var pointSelected = document.getElementById("pointSelected");
+
+            holder.onclick = function(evt){
+              var activePoint = myChart.getElementAtEvent(evt);
+             pointSelected.innerHTML = 'Point selected... index: ' + activePoint[0]._index;
+            };
+        }
+
+
+        myfun()
+
+</script>
+{% endif %}
+
+</html>

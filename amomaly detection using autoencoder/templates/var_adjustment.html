@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+
+<title>Plot</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+}
+
+</style>
+</head>
+<body>
+<div>
+    <center>
+
+    <h4>Select Variables for analysis</h4>
+    <form action="{{url_for('variable_adjustment')}}" method="post">
+      <select id="myselect" name="method_used" onchange="myFunction(this)">
+        <option value="method1">Moving Average</option>
+        <option value="method2">Prediction</option>
+      </select>
+        <div id="mytable">
+          <table id="tab">
+            <tr>
+        <th>Threshold Loss:</th>  <td><input type="text" name="thresh_loss"></td>
+            </tr>
+            <tr>
+            <th>Window Size For Moving Average:</th>  <td><input type="text" name="window_size"></td>
+            </tr>
+            <tr><td></td><td><input type="submit" value="Ok"></td></tr>
+          </table>
+        </div>
+    </form>
+
+        {% if result['max']>0 %}
+        <h5>Maximum recommended value: {{result['max']}}</h5>
+        <form action="{{url_for('variable_adjustment')}}" method="post">
+        <table>
+            <tr>
+        <th>Threshold Percentage:</th>  <td><input type="text" name="thresh_percen"></td>
+            </tr>
+            <tr><td></td><td><input type="submit" value="Ok"></td></tr>
+        </table>
+    </form>
+
+        {% endif %}
+
+
+    </center>
+</div>
+{% if result['have_img']==True %}
+<div id="mydiv">
+</div>
+{% endif %}
+</body>
+<script>
+  function myFunction(val){
+        var value=val.value;
+        if(value=='method1'){
+        if(document.getElementById("tab")!=null){document.getElementById("tab").remove();}
+        var div=document.getElementById("mytable");
+        var table=document.createElement('table')
+        table.id="tab"
+        div.appendChild(table)
+        var row = table.insertRow(0);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        cell1.innerHTML = "Threshold Loss:";
+        var el = document.createElement('input');
+        el.type = 'text';
+        el.name = 'thresh_loss';
+        cell2.appendChild(el);
+
+        var row1 = table.insertRow(1);
+        var cell11 = row1.insertCell(0);
+        var cell21 = row1.insertCell(1);
+        cell11.innerHTML = "Window Size For Moving Average:";
+        var el1 = document.createElement('input');
+        el1.type = 'text';
+        el1.name = 'window_size';
+        cell21.appendChild(el1);
+
+        var row2 = table.insertRow(2);
+        var cell12 = row2.insertCell(0);
+        var cell22 = row2.insertCell(1);
+        cell12.innerHtml="";
+        var el2 = document.createElement('input');
+        el2.type = 'submit';
+        el2.value = 'Ok';
+        cell22.appendChild(el2);
+        }
+        if(value=='method2'){
+        if(document.getElementById("tab")!=null){document.getElementById("tab").remove();}
+        var div=document.getElementById("mytable");
+        var table=document.createElement('table')
+        table.id="tab"
+        div.appendChild(table)
+        var row = table.insertRow(0);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        cell1.innerHTML = "Threshold Loss:";
+        var el = document.createElement('input');
+        el.type = 'text';
+        el.name = 'thresh_loss';
+        cell2.appendChild(el);
+
+        var row2 = table.insertRow(1);
+        var cell12 = row2.insertCell(0);
+        var cell22 = row2.insertCell(1);
+        cell12.innerHtml="";
+        var el2 = document.createElement('input');
+        el2.type = 'submit';
+        el2.value = 'Ok';
+        cell22.appendChild(el2);
+        }
+    }
+
+
+
+
+</script>
+
+{% if (result['have_img']==True) %}
+<script>
+
+    var loss={{result['loss']}}
+    var index=[{% for i in result['index'] %}'{{i}}',{% endfor %}]
+    var ana_loss={{result['anamoly_loss']}}
+    var ana_index=[{% for i in result['anamoly_index'] %}'{{i}}',{% endfor %}]
+
+
+var trace1 = {
+  x: index,
+  y: loss,
+  name: 'Data Loss',
+  mode: 'lines',
+  type: 'scatter'
+};
+
+var trace2 = {
+  x: ana_index,
+  y: ana_loss,
+  name: 'Anamolies',
+  mode: 'markers',
+  type: 'scatter'
+};
+
+var data = [trace1, trace2];
+
+Plotly.newPlot('mydiv', data);
+</script>
+{% endif %}
+
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+<!--Plotly.js-->
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+        <body>
+        <h3>Plot for actual and predicted values</h3>
+<div class="showcase__section" id="bubble">
+  <div class="spacer --small"></div>
+  <div id="bubbleplots">
+    <div class="bubbleplot" data-num="0">
+      <div class="plot" id="plotdiv"></div>
+      <div class="control-row">
+        Sensors: <select class="sensordata">
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+<script>
+
+    //var allYear = {% for i in result['index'] %}'{{i}}',{% endfor %},
+    //    allGdp = result['actual'],
+    //    allGdp1= result['predicted'],
+    //   listofCountries = result['sensors'],
+
+
+    var allYear = [{% for i in result['index'] %}'{{i}}',{% endfor %}],
+        allGdp = {{result['actual']}},
+        allGdp1= {{result['pred']}},
+        listofCountries = [{% for i in result['sensors'] %}'{{i}}',{% endfor %}],
+        currentCountry,
+        currentGdp = [],
+        currentGdp1 = [],
+        currentYear = [],
+        split1 = '{{result['split1']}}',
+        split = '{{result['split']}}';
+        //anamoly_index=[{% for i in result['anamoly_index'] %}'{{i}}',{% endfor %}];
+
+        //alert(allYear.length)
+        //alert(allGdp.length)
+        //alert(allGdp[0].length)
+        //alert(allGdp1.length)
+        //alert(allGdp1[0].length)
+        //alert(listofCountries.length)
+
+
+
+    function getCountryData(chosenCountry) {
+        currentGdp = [];
+        currentGdp1 = [];
+        for (var i = 0 ; i < listofCountries.length ; i++){
+            if ( listofCountries[i] === chosenCountry ) {
+                currentGdp=allGdp[i];
+                currentGdp1=allGdp1[i];
+                break;
+            }
+        }
+    };
+
+    // Default Country Data
+
+
+    function setBubblePlot(chosenCountry) {
+        getCountryData(chosenCountry);
+
+        var trace1 = {
+            x: allYear,
+            y: currentGdp,
+            name: 'Actual Readings',
+            mode: 'lines',
+            type: 'scatter',
+        };
+        var trace2 = {
+            x: allYear,
+            y: currentGdp1,
+            name: 'Predicted Reading',
+            mode: 'lines',
+            type: 'scatter',
+        };
+
+        var data = [trace1,trace2];
+
+        var layout = {
+            title:'Line and Scatter Plot',
+            shapes: [
+
+        {
+            type: 'rect',
+            xref: 'x',
+            yref: 'paper',
+            x0: split,
+            y0: 0,
+            x1: split1,
+            y1: 1,
+            fillcolor: '#d3d3d3',
+            opacity: 0.2,
+            line: {
+                width: 0
+            }
+        }
+        ],
+        };
+
+        Plotly.newPlot('plotdiv', data, layout);
+    };
+
+    setBubblePlot(listofCountries[0]);
+
+    var innerContainer = document.querySelector('.bubbleplot'),
+        plotEl = innerContainer.querySelector('.plot'),
+       countrySelector = innerContainer.querySelector('.sensordata');
+
+    function assignOptions(textArray, selector) {
+        for (var i = 0; i < textArray.length;  i++) {
+            var currentOption = document.createElement('option');
+            currentOption.text = textArray[i];
+           selector.appendChild(currentOption);
+       }
+  }
+
+   assignOptions(listofCountries, countrySelector);
+
+    function updateCountry(){
+        setBubblePlot(countrySelector.value);
+    }
+
+    countrySelector.addEventListener('change', updateCountry, false);
+
+</script>
+
+
+
+</html>

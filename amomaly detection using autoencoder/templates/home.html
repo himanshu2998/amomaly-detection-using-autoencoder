@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        {% if result['file_uploaded']==True %}
+            alert('File uploaded');
+        {% endif %}
+    </script>
+<title>Home</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+    height: 100vh;
+    overflow: hidden;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+}
+
+.header {
+  background-color: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+  height: 20vh;
+}
+
+.footer {
+  background-color: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+  height: 10vh;
+}
+
+.main {
+  width: 25%;
+  float: left;
+  padding: 15px;
+  height: 70vh;
+}
+
+
+.main a {
+  display: block;
+  color: blue;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.main a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.main a:active {
+  background-color: #ddd;
+  color: black;
+}
+
+
+.menu {
+  width: 75%;
+  float: right;
+  padding: 5px;
+  height: 70vh;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Siemens</h1>
+
+</div>
+
+<div class="row">
+  <div class="main">
+      <ul>
+          {% if result['file_uploaded']==False %}
+          <li><form action="{{url_for('get_file')}}" method="post"  enctype = "multipart/form-data">
+              <input type="file" name="data" value="data" id="data">
+              <input type="submit" value="Ok">
+          </form>
+          </li>
+          {% endif %}
+          <li><a href="/plots" target="target">Plots</a></li>
+          <li><a href="/train_model" target="target">Train Model</a></li>
+          <li><a href="/train_plots" target="target">Train Plots</a></li>
+          <li><a href="/variable_adjustment" target="target">Variable Adjustment</a></li>
+          <li><a href="/view_anamoly" target="target">View Anamolies</a></li>
+          <li><a href="/act_pred" target="target">Plot P/A</a></li>
+      </ul>
+  </div>
+
+  <div class="menu" id="target">
+      <iframe src="info" height="100%" width="100%" name="target"></iframe>
+      </div>
+
+</div>
+<div class="footer">
+  <h5>Integrity for life</h5>
+</div>
+
+</body>
+</html>
